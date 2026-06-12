@@ -1,0 +1,40 @@
+# ABOUTME: MCP server crate exposing dravr-aiguilleur tool selection over the Model Context Protocol.
+# ABOUTME: Wraps the provider-free core lib in a dravr-tronc stdio/HTTP server for standalone experimentation.
+#
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 dravr.ai
+
+[package]
+name = "dravr-aiguilleur-mcp"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "MCP server for dravr-aiguilleur — expose tool selection over the Model Context Protocol"
+repository = "https://github.com/dravr-ai/dravr-aiguilleur"
+readme = "README.md"
+keywords = ["mcp", "llm", "tools", "routing", "json-rpc"]
+categories = ["command-line-utilities", "development-tools"]
+
+[lib]
+name = "dravr_aiguilleur_mcp"
+path = "src/lib.rs"
+
+[[bin]]
+name = "dravr-aiguilleur-mcp"
+path = "src/main.rs"
+
+[dependencies]
+dravr-aiguilleur = { path = "../..", version = "0.1.0" }
+dravr-tronc = { git = "https://github.com/dravr-ai/dravr-tronc.git", tag = "v0.3.1" }
+async-trait = "0.1"
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.45", features = ["rt-multi-thread", "macros", "net", "io-util", "sync", "signal", "time"] }
+tracing = "0.1"
+
+[dev-dependencies]
+tokio = { version = "1.45", features = ["full", "test-util"] }
+
+[lints]
+workspace = true

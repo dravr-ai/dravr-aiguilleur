@@ -1,0 +1,106 @@
+# ABOUTME: Pluggable tool-selection SPI for LLM agents — narrows a turn's tool set via deterministic + LLM-escalated rules.
+# ABOUTME: Core lib is provider-free; the dravr-aiguilleur-mcp crate wraps it in a dravr-tronc MCP server for standalone use.
+
+[workspace]
+members = [".", "crates/dravr-aiguilleur-mcp"]
+
+[package]
+name = "dravr-aiguilleur"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Pluggable tool-selection SPI for LLM agents — narrows a turn's tool set via deterministic and LLM-escalated rules"
+repository = "https://github.com/dravr-ai/dravr-aiguilleur"
+homepage = "https://github.com/dravr-ai/dravr-aiguilleur"
+documentation = "https://docs.rs/dravr-aiguilleur"
+keywords = ["llm", "mcp", "tools", "routing", "agent"]
+categories = ["api-bindings", "command-line-utilities"]
+readme = "README.md"
+exclude = [".claude/", ".github/", "scripts/", "AGENTS.md", "crates/"]
+
+# ============================================================================
+# Build Profiles
+# ============================================================================
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+panic = "abort"
+strip = true
+
+# ============================================================================
+# Workspace Lint Configuration
+# ============================================================================
+# Shared across all workspace crates via [lints] workspace = true.
+
+# Lint configuration mirrors dravr-platform's full set for fleet consistency.
+[workspace.lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }
+pedantic = { level = "deny", priority = -1 }
+nursery = { level = "deny", priority = -1 }
+
+# Error-handling anti-patterns (CLAUDE.md enforcement)
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+
+# Type conversion casts - allowed when properly validated
+cast_possible_truncation = "allow"
+cast_sign_loss = "allow"
+cast_precision_loss = "allow"
+
+# Const fn suggestions - clippy suggests const for methods that can't be const
+missing_const_for_fn = "allow"
+
+# Structural patterns - validated separately
+struct_excessive_bools = "allow"
+
+# Long functions - allowed with mandatory documentation comment
+too_many_lines = "allow"
+
+# Significant drop tightening - false positives with async lock guards
+significant_drop_tightening = "allow"
+
+# Cognitive complexity - enforce small, focused functions
+cognitive_complexity = "deny"
+
+# Performance and async anti-patterns
+clone_on_copy = "warn"
+redundant_clone = "warn"
+await_holding_lock = "warn"
+
+# String allocation inefficiencies
+str_to_string = "deny"
+
+# Module naming - allow repetition for clarity
+module_name_repetitions = "allow"
+
+# Rust idiom enforcement (prevent AI-generated regressions)
+uninlined_format_args = "warn"
+map_unwrap_or = "warn"
+
+# Enforce `use` imports over inline qualified paths
+absolute_paths = "deny"
+
+# Banned methods declared in clippy.toml
+disallowed_methods = "deny"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[dependencies]
+async-trait = "0.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tracing = "0.1"
+
+[dev-dependencies]
+tokio = { version = "1.45", features = ["macros", "rt", "rt-multi-thread"] }
+
+[lints]
+workspace = true

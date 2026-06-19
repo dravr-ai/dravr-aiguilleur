@@ -18,11 +18,10 @@ use async_trait::async_trait;
 use dravr_aiguilleur::{
     CategoryKeywordRules, DeterministicSelector, SelectionRequest, ToolCandidate, ToolSelector,
 };
-use dravr_tronc::mcp::protocol::{CallToolResult, ToolDefinition};
-use dravr_tronc::mcp::tool::{McpTool, ToolRegistry};
+use dravr_tronc::mcp::schema::{Tool, ToolResponse};
+use dravr_tronc::mcp::tool::{McpTool, ToolContext, ToolRegistry};
 use serde::Deserialize;
 use serde_json::{json, Value};
-use tokio::sync::RwLock;
 
 /// Server state for the aiguilleur MCP server.
 ///
@@ -60,8 +59,8 @@ struct SelectTool;
 
 #[async_trait]
 impl McpTool<ServerState> for SelectTool {
-    fn definition(&self) -> ToolDefinition {
-        ToolDefinition {
+    fn definition(&self) -> Tool {
+        Tool {
             name: "select_tools".to_owned(),
             description: "Narrow a candidate tool set to the tools relevant to a message, \
                           using a pinned floor, persona category scope, and keyword rules."
@@ -112,13 +111,19 @@ impl McpTool<ServerState> for SelectTool {
                     }
                 }
             }),
+            annotations: None,
         }
     }
 
-    async fn execute(&self, _state: &Arc<RwLock<ServerState>>, arguments: Value) -> CallToolResult {
+    async fn execute(
+        &self,
+        _state: &Arc<ServerState>,
+        _ctx: &ToolContext,
+        arguments: Value,
+    ) -> ToolResponse {
         let args: SelectArgs = match serde_json::from_value(arguments) {
             Ok(args) => args,
-            Err(e) => return CallToolResult::error(format!("Invalid arguments: {e}")),
+            Err(e) => return ToolResponse::error(format!("Invalid arguments: {e}")),
         };
 
         let rules = args.rules.into_iter().fold(
@@ -137,8 +142,8 @@ impl McpTool<ServerState> for SelectTool {
         let outcome = DeterministicSelector::new(rules).select(&request).await;
 
         match serde_json::to_string(&outcome) {
-            Ok(payload) => CallToolResult::text(payload),
-            Err(e) => CallToolResult::error(format!("Failed to serialize outcome: {e}")),
+            Ok(payload) => ToolResponse::text(payload),
+            Err(e) => ToolResponse::error(format!("Failed to serialize outcome: {e}")),
         }
     }
 }

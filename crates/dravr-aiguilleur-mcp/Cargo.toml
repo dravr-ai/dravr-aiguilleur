@@ -25,7 +25,7 @@ path = "src/main.rs"
 
 [dependencies]
 dravr-aiguilleur = { path = "../..", version = "0.1.0" }
-dravr-tronc = { git = "https://github.com/dravr-ai/dravr-tronc.git", tag = "v0.3.1" }
+dravr-tronc = "0.5.3"
 async-trait = "0.1"
 clap = { version = "4", features = ["derive"] }
 serde = { version = "1.0", features = ["derive"] }

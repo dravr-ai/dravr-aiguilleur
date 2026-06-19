@@ -15,7 +15,6 @@ use dravr_tronc::mcp::transport::{http, stdio};
 use dravr_tronc::server::cli::McpArgs;
 use dravr_tronc::server::tracing_init;
 use dravr_tronc::McpServer;
-use tokio::sync::RwLock;
 
 /// dravr-aiguilleur-mcp — MCP server exposing tool selection over the Model Context Protocol.
 #[derive(Parser)]
@@ -30,7 +29,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
     let cli = Cli::parse();
     tracing_init::init(&cli.server.transport);
 
-    let state = Arc::new(RwLock::new(ServerState));
+    let state = Arc::new(ServerState);
     let registry = build_tool_registry();
     let server = Arc::new(McpServer::new(
         "dravr-aiguilleur-mcp",

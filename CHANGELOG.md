@@ -9,6 +9,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-06-19
+
+### Changed
+- `dravr-aiguilleur-mcp` migrated to `dravr-tronc` 0.5.3 (dual-era MCP engine):
+  `mcp::schema::{Tool, ToolResponse}`, `McpTool::execute` gains a `&ToolContext`
+  parameter, and tool state is `&Arc<S>` directly (tronc no longer wraps it in a
+  `RwLock`). Consumed via the crates.io release instead of a git tag. The
+  provider-free core `dravr-aiguilleur` crate is unchanged.
+
 ### Added
 - Core `ToolSelector` SPI with the selection contract (kept set ⊆ candidates,
   ⊇ `pinned` floor, ≥ `min_keep`).

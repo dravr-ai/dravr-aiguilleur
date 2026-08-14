@@ -5,11 +5,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "git config core.hooksPath .build/hooks"
+            "command": "[ -f .build/ci/bootstrap-repo.sh ] || git -C .build symbolic-ref -q HEAD >/dev/null 2>&1 || git submodule update --init --recursive -q 2>/dev/null; [ -f .build/ci/bootstrap-repo.sh ] && bash .build/ci/bootstrap-repo.sh || true"
           },
           {
             "type": "command",
-            "command": "echo '✅ dravr-aiguilleur workspace ready - git hooks configured'"
+            "command": "echo '\u2705 dravr-aiguilleur workspace ready - git hooks configured'"
           },
           {
             "type": "command",
